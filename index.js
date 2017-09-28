@@ -17,20 +17,27 @@
     }
 
     Hocr.prototype.processBox = function(str) {
-      var coords;
-      if (str.indexOf('bbox') === 0) {
-        coords = str.split(' ');
-        if (coords.length !== 5) {
+      var coordinates;
+      var lineComponents = str.split(';');
+      if (lineComponents.length === 0) {
+        return str;
+      }
+      var boxValue = lineComponents[0];
+      if (boxValue.indexOf('bbox') === 0) {
+        coordinates = boxValue.split(' ');
+        if (coordinates.length !== 5) {
           return str;
-        } else {
+        }
+        else {
           return {
-            x0: coords[1],
-            y0: coords[2],
-            x1: coords[3],
-            y1: coords[4]
+            x0: coordinates[1],
+            y0: coordinates[2],
+            x1: coordinates[3],
+            y1: coordinates[4]
           };
         }
-      } else {
+      }
+      else {
         return str;
       }
     };
@@ -38,32 +45,36 @@
     Hocr.prototype.getDataFromChildren = function(dom) {
       if (dom.children && dom.children[0]) {
         return this.getDataFromChildren(dom.children[0]);
-      } else {
+      }
+      else {
         return dom.data;
       }
     };
 
     Hocr.prototype.processWord = function(dom, idxPage, idxPar, idxLine) {
       return this.result[idxPage].par[idxPar].line[idxLine].words.push({
-        id: dom.attribs.id,
-        infos: this.processBox(dom.attribs.title),
-        data: this.getDataFromChildren(dom)
-      });
+                                                                         id: dom.attribs.id,
+                                                                         infos: this.processBox(dom.attribs.title),
+                                                                         data: this.getDataFromChildren(dom)
+                                                                       });
     };
 
     Hocr.prototype.processLine = function(dom, idxPage, idxPar) {
       var elem, _i, _len, _ref, _results;
       this.result[idxPage].par[idxPar].line.push({
-        id: dom.attribs.id,
-        infos: this.processBox(dom.attribs.title),
-        words: []
-      });
+                                                   id: dom.attribs.id,
+                                                   infos: this.processBox(dom.attribs.title),
+                                                   words: []
+                                                 });
       _ref = dom.children;
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         elem = _ref[_i];
         if (elem.attribs["class"] === 'ocr_word') {
-          _results.push(this.processWord(elem, idxPage, idxPar, this.result[idxPage].par[idxPar].line.length - 1));
+          _results.push(this.processWord(elem,
+                                         idxPage,
+                                         idxPar,
+                                         this.result[idxPage].par[idxPar].line.length - 1));
         }
       }
       return _results;
@@ -72,8 +83,8 @@
     Hocr.prototype.processPar = function(dom, idxPage) {
       var elem, _i, _len, _results;
       this.result[idxPage].par.push({
-        line: []
-      });
+                                      line: []
+                                    });
       _results = [];
       for (_i = 0, _len = dom.length; _i < _len; _i++) {
         elem = dom[_i];
@@ -90,10 +101,10 @@
         dom.attribs.title = dom.attribs.title.split(';')[1].replace(/^\s+/g, '').replace(/\s+$/g, '');
       }
       this.result.push({
-        id: dom.attribs.id,
-        infos: this.processBox(dom.attribs.title),
-        par: []
-      });
+                         id: dom.attribs.id,
+                         infos: this.processBox(dom.attribs.title),
+                         par: []
+                       });
       _ref = dom.children;
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -108,7 +119,8 @@
               if (par.attribs["class"] === 'ocr_par') {
                 if (par.children) {
                   _results2.push(this.processPar(par.children, this.result.length - 1));
-                } else {
+                }
+                else {
                   _results2.push(void 0);
                 }
               }
@@ -158,7 +170,8 @@
       handler = new htmlparser.DefaultHandler(function(error, dom) {
         if (error) {
           return self.callback(error, false);
-        } else {
+        }
+        else {
           self.toJSON(dom);
           return self.callback(false, self.result);
         }
