@@ -1,5 +1,5 @@
 {
-  "name": "node-hocr",
+  "name": "tesseract-hocr",
   "description": "Hocr parser for Node.js",
   "author": "Vincent Giersch <mail@vincent.sh>",
   "version": "0.0.4",

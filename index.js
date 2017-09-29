@@ -70,7 +70,7 @@
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         elem = _ref[_i];
-        if (elem.attribs["class"] === 'ocr_word') {
+        if (elem.attribs["class"] === 'ocrx_word') {
           _results.push(this.processWord(elem,
                                          idxPage,
                                          idxPar,
